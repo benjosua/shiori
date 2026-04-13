@@ -2,7 +2,7 @@ use sha2::{Digest, Sha256};
 
 pub fn normalize_text(input: &str) -> String {
     let cleaned = ammonia::clean(input);
-    let plain = html2text::from_read(cleaned.as_bytes(), 80);
+    let plain = html2text::from_read(cleaned.as_bytes(), 80).unwrap_or(cleaned);
     plain
         .replace('\u{0c}', "\n")
         .split_whitespace()
@@ -52,7 +52,11 @@ pub fn chunk_text(input: &str, max_words: usize, overlap: usize) -> Vec<String> 
 pub fn hash_text(input: &str) -> String {
     let mut hasher = Sha256::new();
     hasher.update(input.as_bytes());
-    format!("{:x}", hasher.finalize())
+    hasher
+        .finalize()
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect()
 }
 
 pub fn reciprocal_rank_fusion(rank: usize) -> f32 {

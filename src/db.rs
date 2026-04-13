@@ -131,7 +131,7 @@ struct RetrievedPoint {
 impl Database {
     pub fn new(config: Arc<Config>) -> Result<Self> {
         Ok(Self {
-            client: Agent::new(),
+            client: Agent::new_with_defaults(),
             config,
             id_counter: Arc::new(AtomicI64::new(Utc::now().timestamp_micros())),
         })
@@ -686,7 +686,7 @@ impl Database {
                 body["offset"] = offset_value.clone();
             }
 
-            let response = self
+            let mut response = self
                 .client
                 .post(&format!(
                     "{}/collections/{}/points/scroll",
@@ -694,8 +694,10 @@ impl Database {
                 ))
                 .send_json(body)
                 .map_err(|err| anyhow!("scroll qdrant collection {collection}: {err}"))?;
-            let envelope: QdrantEnvelope<ScrollResult> =
-                response.into_json().context("parse qdrant scroll")?;
+            let envelope: QdrantEnvelope<ScrollResult> = response
+                .body_mut()
+                .read_json()
+                .context("parse qdrant scroll")?;
             let ScrollResult {
                 points,
                 next_page_offset,
