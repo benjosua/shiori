@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Material {{ data.material.id }}{% endblock %}
+{% block head_extra %}
+  {% if should_refresh %}
+    <meta http-equiv="refresh" content="2">
+  {% endif %}
+{% endblock %}
+{% block content %}
+  <a href="/" class="tiny">Back</a>
+  <h1>{{ data.material.filename }}</h1>
+  <div class="pill-group">
+    <span class="badge {{ data.material.status }}">{{ data.material.status }}</span>
+    <span class="badge">{{ data.material.kind }}</span>
+  </div>
+  {% match data.material.warning %}
+    {% when Some with (warning) %}
+      <p class="muted">{{ warning }}</p>
+    {% when None %}
+    {% endmatch %}
+  {% match data.material.error %}
+    {% when Some with (error) %}
+      <p>{{ error }}</p>
+    {% when None %}
+    {% endmatch %}
+
+  <section class="panel" style="margin-top: 20px;">
+    <h2>Run search</h2>
+    <form action="/searches" method="post">
+      <input type="hidden" name="material_id" value="{{ data.material.id }}">
+      <label for="selected_deck_import_id" class="tiny muted">Limit to one imported deck</label>
+      <select name="selected_deck_import_id" id="selected_deck_import_id">
+        <option value="">All decks</option>
+        {% for deck in decks %}
+          {% if deck.status == "ready" %}
+            <option value="{{ deck.id }}">{{ deck.filename }}</option>
+          {% endif %}
+        {% endfor %}
+      </select>
+      <button type="submit">Search cards</button>
+    </form>
+  </section>
+
+  <section class="panel" style="margin-top: 20px;">
+    <h2>Preview</h2>
+    <div class="list">
+      {% for segment in data.segments %}
+        <div class="result">
+          <strong>{{ segment.label }}</strong>
+          <div class="snippet">{{ segment.text }}</div>
+        </div>
+      {% endfor %}
+      {% if data.segments.len() == 0 %}
+        <p class="muted">Extracted pages and slides will appear here once parsing finishes.</p>
+      {% endif %}
+    </div>
+  </section>
+{% endblock %}

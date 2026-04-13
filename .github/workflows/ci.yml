@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache cargo artifacts
+        uses: Swatinem/rust-cache@v2
+
+      - name: Check formatting
+        run: cargo fmt --check
+
+      - name: Build
+        run: cargo check
+
+      - name: Lint
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      - name: Test
+        run: cargo test --all-targets
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo artifacts
+        uses: Swatinem/rust-cache@v2
+
+      - name: Start Qdrant
+        run: |
+          docker run -d --name shiori-qdrant-e2e \
+            -p 6335:6335 \
+            -e QDRANT__SERVICE__HTTP_PORT=6335 \
+            -e QDRANT__SERVICE__GRPC_PORT=6336 \
+            qdrant/qdrant
+          until curl -fsS "http://127.0.0.1:6335/collections" >/dev/null; do
+            sleep 1
+          done
+
+      - name: Run end-to-end test
+        run: QDRANT_URL="http://127.0.0.1:6335" cargo test --test e2e end_to_end_search_flow -- --ignored --nocapture

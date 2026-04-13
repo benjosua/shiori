@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Shiori{% endblock %}</title>
+    {% block head_extra %}{% endblock %}
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <style>
+      :root { color-scheme: light dark; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+      body { margin: 0; background: #0d1017; color: #ebeff7; }
+      a { color: #92c7ff; text-decoration: none; }
+      .shell { max-width: 1180px; margin: 0 auto; padding: 24px; }
+      .nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+      .muted { color: #a6b0c1; }
+      .grid { display: grid; gap: 16px; }
+      .grid.two { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+      .panel { background: #171c26; border: 1px solid #283142; border-radius: 8px; padding: 16px; }
+      h1, h2, h3 { margin-top: 0; }
+      input, textarea, select, button { width: 100%; box-sizing: border-box; padding: 10px 12px; border-radius: 6px; border: 1px solid #364155; background: #0f141d; color: inherit; }
+      textarea { min-height: 140px; resize: vertical; }
+      button { cursor: pointer; background: #2367ff; border: 0; font-weight: 600; }
+      button.secondary { background: #293243; }
+      .list { display: grid; gap: 12px; }
+      .row { display: flex; gap: 12px; flex-wrap: wrap; }
+      .badge { display: inline-flex; padding: 4px 8px; border-radius: 999px; background: #233047; color: #d9e7ff; font-size: 12px; }
+      .badge.pending { background: #5b4620; }
+      .badge.failed { background: #5d2630; }
+      .result { border-top: 1px solid #283142; padding-top: 12px; margin-top: 12px; }
+      .snippet { background: #0f141d; border-radius: 6px; padding: 12px; color: #ccd6e5; }
+      .pill-group { display: flex; gap: 8px; flex-wrap: wrap; }
+      .actions { display: flex; gap: 8px; align-items: center; }
+      .actions form { margin: 0; }
+      .tiny { font-size: 13px; }
+      .mono { font-family: ui-monospace, SFMono-Regular, monospace; }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <div class="nav">
+        <div>
+          <a href="/"><strong>Shiori</strong></a>
+          <div class="muted tiny">Local-first search for decks and study materials</div>
+        </div>
+      </div>
+      {% block content %}{% endblock %}
+    </div>
+  </body>
+</html>

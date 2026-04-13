@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Search {{ data.search.id }}{% endblock %}
+{% block head_extra %}
+  {% if should_refresh %}
+    <meta http-equiv="refresh" content="2">
+  {% endif %}
+{% endblock %}
+{% block content %}
+  <a href="/" class="tiny">Back</a>
+  <h1>Search {{ data.search.id }}</h1>
+  <div class="pill-group">
+    <span class="badge {{ data.search.status }}">{{ data.search.status }}</span>
+    {% if data.search.low_coverage %}<span class="badge pending">low coverage</span>{% endif %}
+  </div>
+  {% match data.search.error %}
+    {% when Some with (error) %}
+      <p>{{ error }}</p>
+    {% when None %}
+    {% endmatch %}
+
+  <div class="grid two" style="margin-top: 20px;">
+    <section class="panel">
+      <h2>Query</h2>
+      {% match data.material %}
+        {% when Some with (material) %}
+          <div class="tiny muted">{{ material.filename }}</div>
+          <div class="snippet">{{ material.source_text }}</div>
+        {% when None %}
+          <div class="snippet">{{ data.search.query_text }}</div>
+      {% endmatch %}
+    </section>
+    <section class="panel">
+      <h2>Export cart</h2>
+      <p class="muted tiny">Selected cards are exported as reconstructed front/back cards in a fresh APKG.</p>
+      <div class="list">
+        {% for card in data.cart %}
+          <div class="result">
+            <strong>{{ card.deck_name }}</strong>
+            <div class="snippet">{{ card.card_text_clean }}</div>
+          </div>
+        {% endfor %}
+      </div>
+      {% if data.cart.len() > 0 %}
+        <div class="actions" style="margin-top: 12px;">
+          <a href="/searches/{{ data.search.id }}/export.apkg"><button>Export APKG</button></a>
+        </div>
+      {% endif %}
+    </section>
+  </div>
+
+  <section class="panel" style="margin-top: 20px;">
+    <h2>Results</h2>
+    {% if data.results.len() == 0 %}
+      <p class="muted">No results yet. If the search is still pending, refresh this page in a moment.</p>
+    {% endif %}
+    {% for result in data.results %}
+      <div class="result">
+        <div class="row">
+          <strong>{{ result.deck_name }}</strong>
+          <span class="badge">rerank {{ result.rerank_score }}</span>
+          <span class="badge">chunks {{ result.chunk_hits }}</span>
+          <span class="badge">lex {{ result.lexical_bonus }}</span>
+        </div>
+        {% if result.matched_labels_text.len() > 0 %}
+          <div class="tiny muted" style="margin: 8px 0;">matched: {{ result.matched_labels_text }}</div>
+        {% endif %}
+        <div class="snippet">{{ result.best_snippet }}</div>
+        <details style="margin-top: 8px;">
+          <summary class="tiny muted">Normalized card text</summary>
+          <div class="snippet">{{ result.card_text_clean }}</div>
+        </details>
+        <div class="actions" style="margin-top: 10px;">
+          {% if result.in_cart %}
+            <form action="/searches/{{ data.search.id }}/cart" method="post">
+              <input type="hidden" name="card_id" value="{{ result.card_id }}">
+              <input type="hidden" name="action" value="remove">
+              <button type="submit" class="secondary">Remove from cart</button>
+            </form>
+          {% else %}
+            <form action="/searches/{{ data.search.id }}/cart" method="post">
+              <input type="hidden" name="card_id" value="{{ result.card_id }}">
+              <input type="hidden" name="action" value="add">
+              <button type="submit">Add to cart</button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </section>
+{% endblock %}

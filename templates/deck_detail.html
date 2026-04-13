@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Deck {{ data.deck.id }}{% endblock %}
+{% block head_extra %}
+  {% if should_refresh %}
+    <meta http-equiv="refresh" content="2">
+  {% endif %}
+{% endblock %}
+{% block content %}
+  <a href="/" class="tiny">Back</a>
+  <h1>{{ data.deck.filename }}</h1>
+  <div class="pill-group">
+    <span class="badge {{ data.deck.status }}">{{ data.deck.status }}</span>
+    <span class="badge">{{ data.deck.note_count }} notes</span>
+    <span class="badge">{{ data.deck.card_count }} cards</span>
+  </div>
+  {% match data.deck.warning %}
+    {% when Some with (warning) %}
+      <p class="muted">{{ warning }}</p>
+    {% when None %}
+    {% endmatch %}
+  {% match data.deck.error %}
+    {% when Some with (error) %}
+      <p>{{ error }}</p>
+    {% when None %}
+    {% endmatch %}
+
+  <div class="grid two" style="margin-top: 20px;">
+    <section class="panel">
+      <h2>Models</h2>
+      <div class="list">
+        {% for model in data.models %}
+          <div>
+            <strong>{{ model.name }}</strong>
+            <div class="tiny muted mono">mid {{ model.original_model_id }}</div>
+          </div>
+        {% endfor %}
+        {% if data.models.len() == 0 %}
+          <p class="muted tiny">Waiting for ingest to finish.</p>
+        {% endif %}
+      </div>
+    </section>
+    <section class="panel">
+      <h2>Sample cards</h2>
+      <div class="list">
+        {% for card in data.sample_cards %}
+          <div class="result">
+            <div class="tiny muted">{{ card.deck_name }} / ord {{ card.ord }}</div>
+            <div class="snippet">{{ card.card_text_clean }}</div>
+          </div>
+        {% endfor %}
+        {% if data.sample_cards.len() == 0 %}
+          <p class="muted tiny">Cards will appear here once indexing completes.</p>
+        {% endif %}
+      </div>
+    </section>
+  </div>
+{% endblock %}

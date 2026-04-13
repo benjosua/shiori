@@ -1,0 +1,2 @@
+# Replace with a local GGUF path before use.
+FROM ./models/model.gguf

@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+  <h1>Search across decks and source material</h1>
+  <div class="grid two">
+    <section class="panel">
+      <h2>Import APKG</h2>
+      <form action="/decks" method="post" enctype="multipart/form-data">
+        <input type="file" name="deck_file" accept=".apkg" required>
+        <p class="muted tiny">Imports notes, cards, tags, deck names, media, lexical index, and dense chunks.</p>
+        <button type="submit">Upload deck</button>
+      </form>
+    </section>
+    <section class="panel">
+      <h2>Upload study material</h2>
+      <form action="/materials" method="post" enctype="multipart/form-data">
+        <input type="file" name="material_file" accept=".txt,.pdf,.doc,.docx,.ppt,.pptx">
+        <p class="muted tiny">`txt`, `pdf`, `docx`, and `pptx` are supported. Image-only PDFs will fail with an OCR warning.</p>
+        <button type="submit">Upload material</button>
+      </form>
+      <hr>
+      <form action="/materials" method="post" enctype="multipart/form-data">
+        <textarea name="query_text" placeholder="Or paste source text here"></textarea>
+        <button type="submit" class="secondary">Save pasted text</button>
+      </form>
+    </section>
+  </div>
+
+  <div class="grid two" style="margin-top: 20px;">
+    <section class="panel">
+      <h2>Decks</h2>
+      <div class="list">
+        {% for deck in data.decks %}
+          <a href="/decks/{{ deck.id }}">
+            <div>
+              <strong>{{ deck.filename }}</strong>
+              <div class="row tiny muted">
+                <span class="badge {{ deck.status }}">{{ deck.status }}</span>
+                <span>{{ deck.note_count }} notes</span>
+                <span>{{ deck.card_count }} cards</span>
+              </div>
+              {% match deck.warning %}
+                {% when Some with (warning) %}
+                  <div class="tiny muted">{{ warning }}</div>
+                {% when None %}
+                {% endmatch %}
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Materials</h2>
+      <div class="list">
+        {% for material in data.materials %}
+          <a href="/materials/{{ material.id }}">
+            <div>
+              <strong>{{ material.filename }}</strong>
+              <div class="row tiny muted">
+                <span class="badge {{ material.status }}">{{ material.status }}</span>
+                <span>{{ material.kind }}</span>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+
+  <section class="panel" style="margin-top: 20px;">
+    <h2>Searches</h2>
+    <div class="list">
+      {% for search in data.searches %}
+        <a href="/searches/{{ search.id }}">
+          <div>
+            <strong>Search {{ search.id }}</strong>
+            <div class="row tiny muted">
+              <span class="badge {{ search.status }}">{{ search.status }}</span>
+              {% if search.low_coverage %}<span>low coverage</span>{% endif %}
+              {% match search.selected_deck_import_id %}
+                {% when Some with (deck_id) %}
+                  <span>deck {{ deck_id }}</span>
+                {% when None %}
+                {% endmatch %}
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}

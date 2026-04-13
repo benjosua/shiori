@@ -1,0 +1,13 @@
+/target
+/.DS_Store
+/.local
+/.qdrant-initialized
+/data
+/models
+.env
+.env.*
+!.env.example
+*.apkg
+*.db
+*.log
+duplicate_cleanup_report.txt
