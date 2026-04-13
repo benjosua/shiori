@@ -25,13 +25,13 @@ pub fn router() -> Router<AppState> {
     Router::new()
         .route("/", get(index))
         .route("/decks", post(upload_deck))
-        .route("/decks/:id", get(deck_detail))
+        .route("/decks/{id}", get(deck_detail))
         .route("/materials", post(upload_material))
-        .route("/materials/:id", get(material_detail))
+        .route("/materials/{id}", get(material_detail))
         .route("/searches", post(create_search))
-        .route("/searches/:id", get(search_detail))
-        .route("/searches/:id/cart", post(update_cart))
-        .route("/searches/:id/export.apkg", get(export_apkg))
+        .route("/searches/{id}", get(search_detail))
+        .route("/searches/{id}/cart", post(update_cart))
+        .route("/searches/{id}/export.apkg", get(export_apkg))
 }
 
 async fn index(State(state): State<AppState>) -> AppResult<impl IntoResponse> {
