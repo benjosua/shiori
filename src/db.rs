@@ -694,8 +694,10 @@ impl Database {
                 ))
                 .send_json(body)
                 .map_err(|err| anyhow!("scroll qdrant collection {collection}: {err}"))?;
-            let envelope: QdrantEnvelope<ScrollResult> =
-                response.body_mut().read_json().context("parse qdrant scroll")?;
+            let envelope: QdrantEnvelope<ScrollResult> = response
+                .body_mut()
+                .read_json()
+                .context("parse qdrant scroll")?;
             let ScrollResult {
                 points,
                 next_page_offset,
