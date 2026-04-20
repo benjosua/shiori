@@ -43,7 +43,7 @@ jobs:
     if: github.event.pull_request.user.login == 'dependabot[bot]' && needs.metadata.outputs.update-type != 'version-update:semver-major'
     steps:
       - name: Check out PR head
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
@@ -73,7 +73,7 @@ jobs:
     if: github.event.pull_request.user.login == 'dependabot[bot]' && needs.metadata.outputs.update-type != 'version-update:semver-major'
     steps:
       - name: Check out PR head
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
