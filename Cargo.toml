@@ -24,7 +24,7 @@ askama = "0.12.1"
 axum = { version = "0.8.8", features = ["multipart"] }
 chrono = { version = "0.4.42", features = ["serde"] }
 genanki-rs = "0.4.0"
-html2text = "0.16.7"
+html2text = "0.17.1"
 qdrant-client = "1.15.0"
 regex = "1.12.2"
 reqwest = { version = "0.12.24", default-features = false, features = ["blocking", "json", "multipart", "rustls-tls"] }
